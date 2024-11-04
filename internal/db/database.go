@@ -6,8 +6,13 @@ type Database struct {
 	*sqlx.DB
 }
 
-func Connect() *Database {
-	db := new(Database)
+func Connect() (*Database, error) {
 
-	return db
+	conn, err := sqlx.Open("sqlite3", "./internal/db/data.db")
+	if err != nil {
+		return &Database{}, err
+	}
+
+	
+	return &Database{conn}, nil
 }

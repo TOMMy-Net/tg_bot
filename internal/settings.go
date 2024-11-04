@@ -9,14 +9,17 @@ import (
 )
 
 type Settings struct {
-	Bot      *tgbotapi.BotAPI
-	Logger   *log.Logger
-	MsgTexts Texts
+	Bot              *tgbotapi.BotAPI
+	Logger           *log.Logger
+	MsgTexts         Texts
+	ApplicationCache map[UserId]Application
 }
 
+type UserId int
+
 type Texts struct {
-	HelloText   string `json:"hello_text"`
-	Information string `json:"company_inforamation"`
+	HelloText    string `json:"hello_text"`
+	Information  string `json:"company_inforamation"`
 	CategoryText string `json:"category_text"`
 }
 
@@ -24,8 +27,10 @@ func NewSettings() *Settings {
 	s := new(Settings)
 	s.Logger = newLogger()
 	s.MsgTexts = loadTexts()
+	s.ApplicationCache = make(map[UserId]Application, 100)
 	return s
 }
+
 
 func newLogger() *log.Logger {
 	if os.Getenv("LOG_PATH") == "" {

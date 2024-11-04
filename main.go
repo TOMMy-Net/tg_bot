@@ -14,11 +14,13 @@ func main() {
 		log.Fatal(err)
 	}
 
+	
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("API_TOKEN"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Bot debug for print information
 	bot.Debug = true
 	updateConfig := tgbotapi.NewUpdate(0)
 	updateConfig.Timeout = 30
@@ -30,19 +32,22 @@ func main() {
 	updates := bot.GetUpdatesChan(updateConfig)
 
 	for update := range updates {
+
 		go proccesUpdate(&update, settings)
+
 	}
 }
 
 func proccesUpdate(update *tgbotapi.Update, settings *internal.Settings) {
-	if update.Message != nil && update.Message.Chat.Type == "private" { // If we got a message
 
-		if update.Message.IsCommand() {
+	if update.Message != nil && update.Message.Chat.Type == "private" { // If we got a message
+		if settings.CheckApplication(update.Message.From.ID) {
+			settings.ApplicationEnter(update)
+		} else if update.Message.IsCommand() {
 			settings.Commands(update)
 		} else {
 			settings.Messages(update)
 		}
-
 	} else if update.CallbackQuery != nil {
 		settings.CallbackQuery(update)
 	}
