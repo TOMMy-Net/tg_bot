@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"tg_bot/internal/db"
+	"tg_bot/internal/models"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -12,7 +14,8 @@ type Settings struct {
 	Bot              *tgbotapi.BotAPI
 	Logger           *log.Logger
 	MsgTexts         Texts
-	ApplicationCache map[UserId]Application
+	ApplicationCache map[UserId]models.Application
+	Storage          *db.Storage
 }
 
 type UserId int
@@ -27,10 +30,9 @@ func NewSettings() *Settings {
 	s := new(Settings)
 	s.Logger = newLogger()
 	s.MsgTexts = loadTexts()
-	s.ApplicationCache = make(map[UserId]Application, 100)
+	s.ApplicationCache = make(map[UserId]models.Application, 100)
 	return s
 }
-
 
 func newLogger() *log.Logger {
 	if os.Getenv("LOG_PATH") == "" {

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"tg_bot/internal/tools"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -39,7 +40,23 @@ func (s *Settings) ApplicationEnter(update *tgbotapi.Update) {
 		msg.ReplyMarkup = MenuButtons
 		s.Send(msg)
 	case ConfirmApplication:
-		
+		application := s.ApplicationCache[UserId(update.Message.From.ID)]
+		err := tools.Validate(application)
+		if err != nil {
+			msg.Text = "Ошибка ввода, попробуйте заново."
+			s.Send(msg)
+			return
+		}
+		id, err := s.Storage.CreateApplication(application)
+		if err != nil {
+			msg.Text = "Ошибка при сохранении заявки, попробуйте заново."
+			s.Send(msg)
+		} else {
+			delete(s.ApplicationCache, UserId(update.Message.From.ID))
+			msg.Text = fmt.Sprintf(`Спасибо! Ваша заявка успешно отправлена. Мы свяжемся с вами в ближайшее время. Ваш идентификационный номер заявки: %d.`, id)
+			msg.ReplyMarkup = MenuButtons
+			s.Send(msg)
+		}
 	case EditApplication:
 		msg.Text = QuesEdit
 		msg.ReplyMarkup = EditButtons
