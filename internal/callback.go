@@ -3,6 +3,7 @@ package internal
 import (
 	"strings"
 	"tg_bot/internal/models"
+	"tg_bot/internal/tools"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -58,10 +59,10 @@ func (s *Settings) CallbackQuery(update *tgbotapi.Update) {
 		errS := s.Send(msg)
 
 		if errR == nil && errS == nil {
-			s.ApplicationCache[UserId(update.CallbackQuery.From.ID)] = models.Application{
+			s.ApplicationCache.Store(tools.UserId(update.CallbackQuery.From.ID), models.Application{
 				UserId:   int(update.CallbackQuery.From.ID),
 				Category: Categorys[update.CallbackQuery.Data],
-			}
+			})
 		}
 	}
 }

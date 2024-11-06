@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"tg_bot/internal/db"
-	"tg_bot/internal/models"
+	"tg_bot/internal/tools"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -14,11 +14,11 @@ type Settings struct {
 	Bot              *tgbotapi.BotAPI
 	Logger           *log.Logger
 	MsgTexts         Texts
-	ApplicationCache map[UserId]models.Application
+	ApplicationCache *tools.ApplicationCache
 	Storage          *db.Storage
 }
 
-type UserId int
+
 
 type Texts struct {
 	HelloText    string `json:"hello_text"`
@@ -30,7 +30,7 @@ func NewSettings() *Settings {
 	s := new(Settings)
 	s.Logger = newLogger()
 	s.MsgTexts = loadTexts()
-	s.ApplicationCache = make(map[UserId]models.Application, 100)
+	s.ApplicationCache = tools.NewCache()
 	return s
 }
 

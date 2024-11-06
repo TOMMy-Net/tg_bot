@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"tg_bot/internal/tools"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -36,6 +38,7 @@ func (s *Settings) Commands(update *tgbotapi.Update) {
 	s.Send(msg)
 }
 
+// all messages from users
 func (s *Settings) Messages(update *tgbotapi.Update) {
 	msg := tgbotapi.NewMessage(update.Message.From.ID, "")
 	switch update.Message.Text {
@@ -47,7 +50,7 @@ func (s *Settings) Messages(update *tgbotapi.Update) {
 		msg.ReplyMarkup = CategoryButtons
 		s.Send(msg)
 	case CancelApplicationText:
-		delete(s.ApplicationCache, UserId(update.Message.From.ID))
+		s.ApplicationCache.Delete(tools.UserId(update.Message.From.ID))
 		msg.Text = s.MsgTexts.HelloText
 		msg.ReplyMarkup = MenuButtons
 		s.Send(msg)
