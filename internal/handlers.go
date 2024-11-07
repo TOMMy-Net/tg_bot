@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"tg_bot/internal/tools"
+	"tg_bot/internal/models"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -50,7 +50,7 @@ func (s *Settings) Messages(update *tgbotapi.Update) {
 		msg.ReplyMarkup = CategoryButtons
 		s.Send(msg)
 	case CancelApplicationText:
-		s.ApplicationCache.Delete(tools.UserId(update.Message.From.ID))
+		s.Cache.DeleteApplication(update.Message.From.ID)
 		msg.Text = s.MsgTexts.HelloText
 		msg.ReplyMarkup = MenuButtons
 		s.Send(msg)
@@ -66,7 +66,12 @@ func (s *Settings) Messages(update *tgbotapi.Update) {
 
 func (s *Settings) HelpHandlerMessage(update *tgbotapi.Update)  {
 	msg := tgbotapi.NewMessage(update.Message.From.ID, HelpText)
-	s.Send(msg)
+	
+	if err := s.Send(msg); err == nil {
+		s.Cache.StoreSupport(update.Message.From.ID, models.Support{
+			UserId: int(update.Message.From.ID),
+		})
+	}
 }
 
 

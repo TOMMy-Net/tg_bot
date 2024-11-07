@@ -36,13 +36,13 @@ func (s *Settings) ApplicationEnter(update *tgbotapi.Update) {
 	msg := tgbotapi.NewMessage(update.Message.From.ID, "")
 	switch update.Message.Text {
 	case CancelApplicationText:
-		s.ApplicationCache.Delete(tools.UserId(update.Message.From.ID))
+		s.Cache.DeleteApplication(update.Message.From.ID)
 		msg.Text = s.MsgTexts.HelloText
 		msg.ReplyMarkup = MenuButtons
 		s.Send(msg)
 	case ConfirmApplication:
 
-		application := s.ApplicationCache.Read(tools.UserId(update.Message.From.ID))
+		application := s.Cache.ReadApplication(update.Message.From.ID)
 		err := tools.Validate(application)
 		if err != nil {
 			msg.Text = "Ошибка ввода, попробуйте заново."
@@ -54,7 +54,7 @@ func (s *Settings) ApplicationEnter(update *tgbotapi.Update) {
 			msg.Text = "Ошибка при сохранении заявки, попробуйте заново."
 			s.Send(msg)
 		} else {
-			s.ApplicationCache.Delete(tools.UserId(update.Message.From.ID))
+			s.Cache.DeleteApplication(update.Message.From.ID)
 			msg.Text = fmt.Sprintf(`Спасибо! Ваша заявка успешно отправлена. Мы свяжемся с вами в ближайшее время. Ваш идентификационный номер заявки: %d.`, id)
 			msg.ReplyMarkup = MenuButtons
 			s.Send(msg)
@@ -71,23 +71,23 @@ func (s *Settings) ApplicationEnter(update *tgbotapi.Update) {
 		msg.ReplyMarkup = CategoryButtons
 		s.Send(msg)
 	case EditContacts:
-		c := s.ApplicationCache.Read(tools.UserId(update.Message.From.ID))
+		c := s.Cache.ReadApplication(update.Message.From.ID)
 		c.Name = ""
 		c.PhoneNumber = ""
-		s.ApplicationCache.Store(tools.UserId(update.Message.From.ID), c)
+		s.Cache.StoreApplication(update.Message.From.ID, c)
 		msg.ReplyMarkup = CancelApplicationButton
 		msg.Text = "Пожалуйста, укажите ваше имя."
 		s.Send(msg)
 	default:
-		c := s.ApplicationCache.Read(tools.UserId(update.Message.From.ID))
+		c := s.Cache.ReadApplication(update.Message.From.ID)
 		if c.Name == "" {
 			c.Name = update.Message.Text
-			s.ApplicationCache.Store(tools.UserId(update.Message.From.ID), c)
+			s.Cache.StoreApplication(update.Message.From.ID, c)
 			msg.Text = "Пожалуйста, укажите ваш номер телефона."
 			s.Send(msg)
 		} else if c.PhoneNumber == "" {
 			c.PhoneNumber = update.Message.Text
-			s.ApplicationCache.Store(tools.UserId(update.Message.From.ID), c)
+			s.Cache.StoreApplication(update.Message.From.ID, c)
 			msg.Text = fmt.Sprintf(`Ваша заявка готова. Пожалуйста, проверьте информацию:
 				Категория: %s
 				Имя: %s
@@ -101,6 +101,6 @@ func (s *Settings) ApplicationEnter(update *tgbotapi.Update) {
 
 
 func (s *Settings) CheckApplication(id int64) bool {
-	b := s.ApplicationCache.Read(tools.UserId(id))
+	b := s.Cache.ReadApplication(id)
 	return b != models.Application{}
 }

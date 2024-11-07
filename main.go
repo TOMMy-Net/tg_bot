@@ -15,7 +15,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
-	tools.NewValidator()
+	tools.NewValidator() // singletone validator
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("API_TOKEN"))
 	if err != nil {
 		log.Fatal(err)

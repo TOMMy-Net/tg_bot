@@ -11,14 +11,12 @@ import (
 )
 
 type Settings struct {
-	Bot              *tgbotapi.BotAPI
-	Logger           *log.Logger
-	MsgTexts         Texts
-	ApplicationCache *tools.ApplicationCache
-	Storage          *db.Storage
+	Bot      *tgbotapi.BotAPI
+	Logger   *log.Logger
+	MsgTexts Texts
+	Cache    *tools.Cache
+	Storage  *db.Storage
 }
-
-
 
 type Texts struct {
 	HelloText    string `json:"hello_text"`
@@ -30,7 +28,7 @@ func NewSettings() *Settings {
 	s := new(Settings)
 	s.Logger = newLogger()
 	s.MsgTexts = loadTexts()
-	s.ApplicationCache = tools.NewCache()
+	s.Cache = tools.NewCache()
 	return s
 }
 
