@@ -57,3 +57,12 @@ func (s *Storage) CreateApplication(a models.Application) (int64, error) {
 	}
 	return id, nil
 }
+
+
+func (s *Storage) CreateSupport(m models.Support) (error) {
+	_, err := s.db.NamedExec("INSERT INTO support(id, user_id, problem) VALUES(:id, :user_id, :problem)", m)
+	if err != nil {
+		return err
+	}
+	return nil
+}

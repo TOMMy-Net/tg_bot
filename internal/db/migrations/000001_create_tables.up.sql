@@ -7,10 +7,8 @@ CREATE TABLE IF NOT EXISTS application(
 );
 
 CREATE TABLE IF NOT EXISTS support (
-	"id" VARCHAR NOT NULL UNIQUE,
+	"id" VARCHAR(255) NOT NULL UNIQUE,
 	"user_id" INTEGER NOT NULL,
-	"name" VARCHAR NOT NULL,
-	"phone_number" VARCHAR NOT NULL,
-	"problem" VARCHAR NOT NULL,
+	"problem" VARCHAR(255) NOT NULL,
 	PRIMARY KEY("id")
 );
