@@ -35,6 +35,9 @@ func (s *Settings) Commands(update *tgbotapi.Update) {
 	case "about":
 		msg.Text = s.MsgTexts.Information
 		msg.ReplyMarkup = MenuButtons
+	case "support":
+		s.HelpHandlerMessage(update)
+		return
 	}
 
 	s.Send(msg)
